@@ -1,0 +1,60 @@
+---
+# tasks file for sonar
+
+- name: Ensure Sonar plugins are up-to-date
+  copy: 
+    src: "{{ item }}"
+    dest: "{{ sonar_plugins_path }}"
+  with_fileglob:
+    - "{{ inventory_dir }}/conf-sonar/plugins/*.jar"
+  tags:
+    - init
+
+# Ensure latest version of PsycoPG2 and its dependencies are installed and up to date
+- name: Ensure latest version of PsycoPG2 and its dependencies are installed and up to date
+  apt:
+    name: "{{ item }}"
+    state: "latest"
+    update_cache: "yes"
+    cache_valid_time: "86400"
+    allow_unauthenticated: "yes"
+  with_items:
+    - python-psycopg2
+  sudo: true
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ https_proxy }}"
+    no_proxy: "{{ no_proxy }}"
+  tags:
+    - postgresql-sonar
+
+- name: Create Sonar user and grant access to database
+  postgresql_user:
+    login_host: "{{ sonar_postgresql_url }}"
+    login_user: "{{ sonar_postgresql_root_username }}"
+    login_password: "{{ sonar_postgresql_root_password }}"
+    port: "{{ sonar_postgresql_port }}"
+    db: "{{ sonar_postgresql_root_username }}"
+    name: "{{ sonar_jdbc_username }}"
+    password: "{{ sonar_jdbc_password }}"
+    role_attr_flags: "NOSUPERUSER,CREATEDB"
+    state: "present"
+  tags:
+    - postgresql-sonar
+
+- name: Create Sonar database
+  postgresql_db:
+    login_host: "{{ sonar_postgresql_url }}"
+    login_user: "{{ sonar_postgresql_root_username }}"
+    login_password: "{{ sonar_postgresql_root_password }}"
+    port: "{{ sonar_postgresql_port }}"
+    name: "{{ sonar_jdbc_database }}"
+    owner: "{{ sonar_jdbc_username }}"
+    encoding: "UTF-8"
+    lc_collate: "en_US.utf8"
+    lc_ctype: "en_US.utf8"
+    template: "template1"
+    state: "present"
+  tags:
+    - postgresql-sonar
+    

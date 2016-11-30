@@ -1,0 +1,25 @@
+---
+# tasks file for sonar
+
+- name: Ensure Sonar container has an up-to-date configuration
+  docker:
+    name: "sonar"
+    image: "{{ athena_registry_url }}/sonarqube:{{ sonar_version }}"
+    state: "reloaded"
+    pull: always
+    ports:
+      - "{{ sonar_port }}:9000"
+    volumes:
+      - "{{ sonar_data_path }}:/opt/sonarqube/data"
+      - "{{ sonar_plugins_path }}:/opt/sonarqube/extensions/plugins"
+    env:
+      SONARQUBE_JDBC_URL="{{ sonar_jdbc_url }}",
+      SONARQUBE_JDBC_USERNAME="{{ sonar_jdbc_username }}",
+      SONARQUBE_JDBC_PASSWORD="{{ sonar_jdbc_password }}",
+      HTTP_PROXY="{{ http_proxy }}",
+      HTTPS_PROXY="{{ https_proxy }}",
+      NO_PROXY="{{ no_proxy }}",
+      HTTP_PROXY_HOST={{ proxy_ip }},
+      HTTP_PROXY_PORT={{ proxy_port }}
+  tags:
+    - docker
