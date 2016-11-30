@@ -1,2 +1,4 @@
 ---
 # defaults file for sonar
+
+sonar_command_var: ""

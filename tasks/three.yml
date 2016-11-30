@@ -12,6 +12,7 @@
     volumes:
       - "{{ sonar_data_path }}:/opt/sonarqube/data"
       - "{{ sonar_plugins_path }}:/opt/sonarqube/extensions/plugins"
+    command: "{{ sonar_command_var }}"
     env:
       SONARQUBE_JDBC_URL="{{ sonar_jdbc_url }}",
       SONARQUBE_JDBC_USERNAME="{{ sonar_jdbc_username }}",
