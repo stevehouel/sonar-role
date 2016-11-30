@@ -1,4 +1,4 @@
-# Sonar Creation playbook #
+# Sonar Creation role #
 
 
 ## Requirements

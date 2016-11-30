@@ -4,7 +4,7 @@
 - name: Ensure Sonar container has an up-to-date configuration
   docker:
     name: "sonar"
-    image: "{{ athena_registry_url }}/sonarqube:{{ sonar_version }}"
+    image: "sonarqube:{{ sonar_version }}"
     state: "reloaded"
     pull: always
     ports:
